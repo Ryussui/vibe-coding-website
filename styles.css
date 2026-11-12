@@ -4,6 +4,7 @@ h1,h2,h3,.disp{font-family:'Bricolage Grotesque','Figtree',sans-serif;letter-spa
 .t-violet{--ac:#6d4aff;--soft:#ece7ff}
 .t-sun{--ac:#c77700;--soft:#fff1cf}
 .t-mint{--ac:#0b8a69;--soft:#d9f6ec}
+.t-green{--ac:#0a6b3c;--soft:#dcf3e3}
 .panel{display:none}
 .panel.on{display:block;animation:in .35s ease}
 @keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
@@ -29,3 +30,4 @@ h1,h2,h3,.disp{font-family:'Bricolage Grotesque','Figtree',sans-serif;letter-spa
 .state{font-family:ui-monospace,Menlo,monospace;font-size:.85rem;word-break:break-all}
 :focus-visible{outline:3px solid var(--ac);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.chip small{display:block}

@@ -31,6 +31,20 @@ const S = [
       ["🧠", "Why websites forget", "Variables live in the browser tab. Refresh and they’re gone. Lasting data needs a database."],
       ["🎫", "Signup, login, tokens", "Signup creates a user. Login proves who you are and returns a token your app attaches to later requests."],
       ["🗄️", "Supabase", "Hosted Postgres database plus built-in auth. Row Level Security decides who may read or write each row."]
+    ] },
+  { k: "t-green", emoji: "🤖", tab: "Nick’s Session", tag: "Part 4",
+    title: "Building an AI Marketing Team",
+    intro: "Instead of one giant prompt, split the work across specialist agents that hand off to each other. Nick built a lite agentic team in Claude for a fictional Louis Vuitton handbag called Terra.",
+    cards: [
+      ["📰", "Why now", "Companies are shifting work toward AI, and agency groups are merging their creative units. Marketers who can run an AI team stand out."],
+      ["📝", "Brief Writer", "Drafts the brief from Project context: goal, audience, budget, message, metric."],
+      ["🔍", "Brief Validator", "Works in a new chat with fresh eyes. Checks objective and audience, then returns a verdict and top fixes."],
+      ["🧭", "Strategist", "Digests the validated brief, shapes the Big Idea and writes a one-pager."],
+      ["🎨", "Designer / Art Director", "Creates key visuals (KVs) with connectors such as Higgsfield, from concepts and assets."],
+      ["✍️", "Copywriter", "Builds the messaging hierarchy and adapts it per channel and platform."],
+      ["✅", "Reviewer", "Checks the work against brand voice, confirms it matches the brief and Big Idea, then signs off."],
+      ["🧰", "Claude setup", "Skills hold each role’s instructions. A Project holds the knowledge base. An email trigger or a scheduled task starts the Brief Builder automatically."],
+      ["🧑‍⚖️", "You stay in charge", "You approve each stage and save it to the knowledge base. A Creative Score even rated the Instagram options against BBH, Ogilvy and McCann standards."]
     ] }
 ];
 
@@ -110,18 +124,14 @@ quiz(mount(0, "g0b"), { name: "Code Matcher", label: "Clue", end: "Structure, st
   ].map(([q, a, w]) => ({ q, a, w, o: F })) });
 
 /* ---------- Game 2: Git workflow drag-and-drop ---------- */
-(function gitGame(el) {
-  const ST = [
-    ["🍴", "Fork the repo", "Copy it to your GitHub"], ["📥", "git clone", "Download it to your computer"],
-    ["💾", "git commit", "Save a snapshot"], ["⬆️", "git push", "Send commits to GitHub"],
-    ["🔀", "Open a Pull Request", "Ask to merge"], ["▲", "Merge and auto-deploy", "Vercel publishes the site"]
-  ];
-  const shuffled = [3, 0, 5, 2, 4, 1];
+function seqGame(el, cfg) {
+  const { ST, shuffled } = cfg;
+  const N = ST.length;
   let seq = [], res = null, msg = "";
   const chip = id => `<div class="btn chip" draggable="true" tabindex="0" data-id="${id}">${ST[id][0]} <b>${ST[id][1]}</b><small class="block opacity-70">${ST[id][2]}</small></div>`;
   const draw = () => {
-    el.innerHTML = `<div class="card p-5"><p class="font-bold" style="color:var(--ac)">Git Workflow Drag-and-Drop</p>
-      <p class="font-semibold my-2">Put the steps in order, from a fresh fork to a live site. Drag them, or tap to add. Tap a placed step to remove it.</p>
+    el.innerHTML = `<div class="card p-5"><p class="font-bold" style="color:var(--ac)">${cfg.name}</p>
+      <p class="font-semibold my-2">${cfg.prompt} Drag them, or tap to add. Tap a placed step to remove it.</p>
       <div id="pool" class="flex flex-wrap gap-3 mb-5 min-h-[4rem] p-2 rounded-xl border-2 border-dashed border-[#1e1b3b]">${shuffled.filter(i => !seq.includes(i)).map(chip).join("") || "<span class='opacity-60 p-2'>All steps placed. Check your order.</span>"}</div>
       <ol class="grid gap-2">${ST.map((_, i) => `<li class="slot ${res ? (res[i] ? "ok" : "bad") : ""}" data-s="${i}"><span class="num">${i + 1}</span>${seq[i] !== undefined ? chip(seq[i]) : "<span class='opacity-60'>Drop step here</span>"}</li>`).join("")}</ol>
       <div class="mt-4 flex gap-3 flex-wrap items-center"><button class="btn solid" id="ck">Check order</button><button class="btn" id="rs">Reset</button><span class="font-semibold" aria-live="polite">${msg}</span></div></div>`;
@@ -145,15 +155,44 @@ quiz(mount(0, "g0b"), { name: "Code Matcher", label: "Clue", end: "Structure, st
     $("#pool", el).ondrop = e => set(seq.filter(x => x !== +e.dataTransfer.getData("text/plain")));
     $("#rs", el).onclick = () => set([]);
     $("#ck", el).onclick = () => {
-      if (seq.length < 6) { msg = "Place all 6 steps first."; return draw(); }
+      if (seq.length < N) { msg = "Place all " + N + " steps first."; return draw(); }
       res = seq.map((id, i) => id === i);
       const n = res.filter(Boolean).length;
-      msg = n === 6 ? "🎉 Perfect! Merging triggers Vercel to rebuild and publish with no manual step." : `${n}/6 in the right spot. Hint: you can’t push what you haven’t committed.`;
+      msg = n === N ? cfg.win : `${n}/${N} in the right spot. ${cfg.hint}`;
       draw();
     };
   };
   draw();
-})(mount(1, "g1"));
+}
+seqGame(mount(1, "g1"), {
+  name: "Git Workflow Drag-and-Drop",
+  prompt: "Put the steps in order, from a fresh fork to a live site.",
+  win: "🎉 Perfect! Merging triggers Vercel to rebuild and publish with no manual step.",
+  hint: "Hint: you can’t push what you haven’t committed.",
+  shuffled: [3, 0, 5, 2, 4, 1],
+  ST: [
+    ["🍴", "Fork the repo", "Copy it to your GitHub"], ["📥", "git clone", "Download it to your computer"],
+    ["💾", "git commit", "Save a snapshot"], ["⬆️", "git push", "Send commits to GitHub"],
+    ["🔀", "Open a Pull Request", "Ask to merge"], ["▲", "Merge and auto-deploy", "Vercel publishes the site"]
+  ]
+});
+
+seqGame(mount(3, "g3a"), {
+  name: "Handoff Chain: Build the AI Team",
+  prompt: "Put Nick’s marketing workflow in order, from the first draft to the final sign-off.",
+  win: "🎉 Perfect! Each agent hands off to the next, and a human approves in the middle.",
+  hint: "Hint: validate the brief before strategy starts, and review the work last.",
+  shuffled: [4, 1, 5, 0, 3, 2],
+  ST: [
+    ["📝", "Brief Writer", "Drafts the brief from Project context"],
+    ["🔍", "Brief Validator", "New chat, fresh eyes"],
+    ["🧭", "Strategist", "Digests the brief, shapes the Big Idea"],
+    ["🧑‍⚖️", "You approve", "Save to the knowledge base"],
+    ["🎨", "Designer + Copywriter", "KVs via Higgsfield, plus channel messaging"],
+    ["✅", "Reviewer", "Checks brand voice and signs off"]
+  ]
+});
+
 
 /* ---------- Game 3: Auth & database simulator ---------- */
 (function authSim(el) {
@@ -184,4 +223,24 @@ quiz(mount(0, "g0b"), { name: "Code Matcher", label: "Clue", end: "Structure, st
     ] });
 })(mount(2, "g2"));
 
-show(Math.min(2, Math.max(0, (parseInt(location.hash.slice(2)) || 1) - 1)));
+/* ---------- Game 4b/4c: Role Matcher + Claude Setup quiz ---------- */
+const R = ["Brief Writer", "Brief Validator", "Strategist", "Designer", "Copywriter", "Reviewer"];
+quiz(mount(3, "g3b"), { name: "Who Does What?", label: "Task", end: "Specialist agents keep each job small and checkable.", cols: "sm:grid-cols-2 lg:grid-cols-3",
+  items: [
+    ["Drafts the brief from Project context: goal, audience, budget, message, metric", 0, "The Brief Writer starts the chain."],
+    ["Critiques the brief in a new chat and returns a verdict and top fixes", 1, "A fresh chat gives it fresh eyes, so it isn’t biased by the drafting."],
+    ["Delivers the Big Idea one-pager", 2, "The Strategist turns the validated brief into the Big Idea."],
+    ["Creates the key visuals with a connector like Higgsfield", 3, "The Designer / Art Director makes the KVs."],
+    ["Builds the messaging hierarchy and adapts it per channel", 4, "The Copywriter writes channel-by-channel copy."],
+    ["Checks everything against brand voice and gives sign-off", 5, "The Reviewer closes the loop."]
+  ].map(([q, a, w]) => ({ q, a, w, o: R })) });
+quiz(mount(3, "g3c"), { name: "Claude Setup", label: "Question", end: "Skills, Projects and triggers turn one chat into a repeatable team.", cols: "",
+  items: [
+    { q: "Where do you store each agent’s reusable instructions, like Marketing Brief Builder?", a: 1, o: ["In your browser bookmarks", "As a Skill in Claude’s settings", "In the footer of each email"], w: "A Skill packages instructions so the same role behaves the same way every time." },
+    { q: "Where do the approved brief, research and strategy live so later agents can use them?", a: 0, o: ["In the Project’s knowledge base", "Only in your memory", "On a sticky note"], w: "Saving approved work to the Project gives every agent shared context." },
+    { q: "You want the Brief Builder to run every day at a set time without you opening Claude. What do you set up?", a: 2, o: ["A longer prompt", "A new Skill", "A scheduled task"], w: "A scheduled task, like Marketing Brief Builder running daily, starts the work for you." },
+    { q: "You email a brief to your inbox and want Claude to pick it up and respond. What is this called in the session?", a: 1, o: ["Prompt injection", "The email trigger", "A fork"], w: "The email trigger starts the Brief Builder from the email’s contents." },
+    { q: "Creative Score rated the Instagram story options. What was the human’s job?", a: 2, o: ["Nothing, the AI decides", "Only to post the result", "Judge the results, approve and decide what ships"], w: "Agents prepare and critique. You stay the decision maker." }
+  ] });
+
+show(Math.min(S.length - 1, Math.max(0, (parseInt(location.hash.slice(2)) || 1) - 1)));
